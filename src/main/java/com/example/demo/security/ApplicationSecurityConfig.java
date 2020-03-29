@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.example.demo.security.ApplicationUserRole.*;
 
@@ -56,7 +59,18 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login").permitAll()
                 .defaultSuccessUrl("/courses", true)
                 .and()
-                .rememberMe();
+                .rememberMe()
+//                .tokenRepository()//for putting rememberme session cookie in db
+                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21)) //convert 21 days to seconds because it needs the num of seconds
+                .key("somethingverysecuredprobablyshouldntchangethis")
+                .and()
+                .logout()
+                .logoutUrl("/logout")//with CSRF on it defaults to POST but we have it off so add the below
+//                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                .clearAuthentication(true)
+                .invalidateHttpSession(true).
+                deleteCookies("JSESSIONID", "remember-me")
+                .logoutSuccessUrl("/login");
 
     }
 
