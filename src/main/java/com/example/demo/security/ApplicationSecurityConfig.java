@@ -58,11 +58,14 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login").permitAll()
                 .defaultSuccessUrl("/courses", true)
+                .passwordParameter("password") //you can use this to change the default param name from html. password is default anyway
+                .usernameParameter("username") //same as above just adding for future me
                 .and()
                 .rememberMe()
 //                .tokenRepository()//for putting rememberme session cookie in db
                 .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21)) //convert 21 days to seconds because it needs the num of seconds
                 .key("somethingverysecuredprobablyshouldntchangethis")
+                .rememberMeParameter("remember-me")//same as username and password. this is default
                 .and()
                 .logout()
                 .logoutUrl("/logout")//with CSRF on it defaults to POST but we have it off so add the below
